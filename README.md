@@ -11,6 +11,7 @@ Output JSON includes:
 * [Elastic Common Schema (ECS)](https://github.com/elastic/ecs) fields are generated.
 
 ### Required
+* [tshark](https://www.wireshark.org/docs/man-pages/tshark.html)
 * [github.com/elastic/go-elasticsearch for 7.x](https://github.com/elastic/go-elasticsearch)
 * [github.com/adriansr/flowhash](https://github.com/adriansr/flowhash)
 
