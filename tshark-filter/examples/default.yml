@@ -2,44 +2,52 @@ default_output: "stdout"
 #default_output: "elasticsearch"
 pcap_extracted_fields:
   - http.request.method
-  - http.request.uri
-  - http.user_agent
-  - http.cookie
-  - http.response.line
-  - http.response.code
-  - http.response.code.desc
-  #- ssl.handshake.extensions_server_name
   - tls.handshake.extensions_server_name
-  - tcp.payload
-  - tcp.reassembled.data  
-  - smb2.protocol_id
+  - tcp.reassembled.data
 pcap_field_conditions:
-  #- http_request_method: 
-      #match: regex
-      #value: ["^P.*","^G.*"]
+  #- http_request_method:
+      #match: exists
+  #- http_request_method: "GET"
+  #- http_request_method: ["GET", "POST", "CONNECT"]
+  #- http_request_method:
+      #match: exact
+      #value:
+        #- "GET"
+        #- "POST"
+        #- "CONNECT"
+  #- http_request_method:
+      #match: case_ignore
+      #value: "get"
+  - http_request_method:
+      match: regex
+      value: ["^P.*","^G.*","^C.*"]
       #value: ".*"
-  #- ssl_handshake_extensions_server_name:
-      #match: exists
-    #tcp_dstport: [80, 443]
-    #tcp_dstport: 443
+  #- http_request_method:
+      #match: regex
+      #value: ["^P.*","^G.*","^C.*"]
+      #value: ".*"
+    #tcp_dstport: [80, 3128]
+    #tcp_dstport:
+      #- 80
+      #- 3128
+  - tls_handshake_extensions_server_name:
+      match: exists
   - tcp_reassembled_data:
-      #match: exists
       match: regex
       value: ".*0d0a0d0a4d5a.*"
-  #- smb2_protocol_id: 
-      #match: exists
-#max_field_len: 1024
-default_action: "agg"
-agg:
-  type: "community_id"
-  extracted_result_fields:
-    - http_request_method
-    - ssl_handshake_extensions_server_name
-    - tcp_reassembled_data
-elasticsearch:
-  address: http://log.example.com:9200
-  document_id: "community_id"
-  bulk: 128
+max_field_len: 1024
+default_action: "filter"
+#default_action: "agg"
+#agg:
+  #type: "community_id"
+  #extracted_result_fields:
+    #- http_request_method
+    #- tcp_reassembled_data
+    #- tls_handshake_extensions_server_name
+#elasticsearch:
+  #address: http://log.example.com:9200
+  #document_id: "community_id"
+  #bulk: 128
   #address: https://log.example.com:9200
   #user_name: elastic
   #password: elastic
@@ -50,3 +58,4 @@ elasticsearch:
   #args:
     #- "-d"
     #- "tcp.port==80,http"
+
