@@ -1,0 +1,29 @@
+default_output: "stdout"
+default_action: "filter"
+pcap_extracted_fields:
+  - http.request.method
+  - http.request.uri
+  - http.user_agent
+  - http.cookie
+  - http.response.line
+  - http.response.code
+  - http.response.code.desc
+  #- ssl.handshake.extensions_server_name
+  - tls.handshake.extensions_server_name
+pcap_field_conditions:
+  - http_request_method: 
+      match: regex
+      value: ["^P.*","^G.*"]
+    tcp_dstport: [80, 3128]
+  #- ssl_handshake_extensions_server_name:
+  - tls_handshake_extensions_server_name:
+      match: exists
+    tcp_dstport: 
+      - 443
+      - 3128
+#max_field_len: 1024
+#tshark:
+  #exe: ""
+  #args:
+    #- "-d"
+    #- "tcp.port==3128,http"

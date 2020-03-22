@@ -1,0 +1,27 @@
+default_output: "stdout"
+#default_output: "elasticsearch"
+default_action: "filter"
+pcap_extracted_fields:
+  - tcp.payload
+  - tcp.reassembled.data  
+  - smb2.protocol_id
+pcap_field_conditions:
+  - smb2_protocol_id: "0xfc534d42"
+  #- smb2_protocol_id:
+      #match: case_ignore
+      #value: "0xfc534d42"      
+#max_field_len: 1024
+#elasticsearch:
+  #address: http://log.example.com:9200
+  #document_id: "community_id"
+  #bulk: 128
+  #address: https://log.example.com:9200
+  #user_name: elastic
+  #password: elastic
+  #ssl_verification_disabled: true
+  #ssl_ca_certificate: "../certs/ca/ca.crt"
+#tshark:
+  #exe: ""
+  #args:
+    #- "-d"
+    #- "tcp.port==80,http"

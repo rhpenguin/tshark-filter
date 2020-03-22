@@ -1,0 +1,35 @@
+default_output: "stdout"
+#default_output: "elasticsearch"
+default_action: "agg"
+pcap_extracted_fields:
+  #- ssl.handshake.extensions_server_name
+  - tls.handshake.extensions_server_name
+  - tcp.payload
+  - tcp.reassembled.data  
+pcap_field_conditions:
+  #- ssl_handshake_extensions_server_name:
+  - tls_handshake_extensions_server_name:
+      match: regex
+      value:
+        - ".*\\.microsoft\\.com"
+        - ".*\\.facebook\\.com"
+max_field_len: 1024
+agg:
+  type: "community_id"
+  extracted_result_fields:
+    #- ssl_handshake_extensions_server_name
+    - tls_handshake_extensions_server_name
+#elasticsearch:
+  #address: http://log.example.com:9200
+  #document_id: "community_id"
+  #bulk: 128
+  #address: https://log.example.com:9200
+  #user_name: elastic
+  #password: elastic
+  #ssl_verification_disabled: true
+  #ssl_ca_certificate: "../certs/ca/ca.crt"
+#tshark:
+  #exe: ""
+  #args:
+    #- "-d"
+    #- "tcp.port==80,http"

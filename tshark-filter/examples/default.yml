@@ -1,0 +1,52 @@
+default_output: "stdout"
+#default_output: "elasticsearch"
+pcap_extracted_fields:
+  - http.request.method
+  - http.request.uri
+  - http.user_agent
+  - http.cookie
+  - http.response.line
+  - http.response.code
+  - http.response.code.desc
+  #- ssl.handshake.extensions_server_name
+  - tls.handshake.extensions_server_name
+  - tcp.payload
+  - tcp.reassembled.data  
+  - smb2.protocol_id
+pcap_field_conditions:
+  #- http_request_method: 
+      #match: regex
+      #value: ["^P.*","^G.*"]
+      #value: ".*"
+  #- ssl_handshake_extensions_server_name:
+      #match: exists
+    #tcp_dstport: [80, 443]
+    #tcp_dstport: 443
+  - tcp_reassembled_data:
+      #match: exists
+      match: regex
+      value: ".*0d0a0d0a4d5a.*"
+  #- smb2_protocol_id: 
+      #match: exists
+#max_field_len: 1024
+default_action: "agg"
+agg:
+  type: "community_id"
+  extracted_result_fields:
+    - http_request_method
+    - ssl_handshake_extensions_server_name
+    - tcp_reassembled_data
+elasticsearch:
+  address: http://log.example.com:9200
+  document_id: "community_id"
+  bulk: 128
+  #address: https://log.example.com:9200
+  #user_name: elastic
+  #password: elastic
+  #ssl_verification_disabled: true
+  #ssl_ca_certificate: "../../es_test/certs/ca/ca.crt"
+#tshark:
+  #exe: ""
+  #args:
+    #- "-d"
+    #- "tcp.port==80,http"

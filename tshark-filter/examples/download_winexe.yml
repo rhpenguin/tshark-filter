@@ -1,0 +1,38 @@
+default_output: "stdout"
+#default_output: "elasticsearch"
+default_action: "filter"
+pcap_extracted_fields:
+  - http.request.method
+  - http.request.uri
+  - http.user_agent
+  - http.cookie
+  - http.response.line
+  - http.response.code
+  - http.response.code.desc
+  - tcp.payload
+  - tcp.reassembled.data  
+pcap_field_conditions:
+  - http_request_method: 
+      match: exists
+    tcp_dstport: 
+      - 443
+      - 3128
+    tcp_reassembled_data:
+      match: regex
+      value: ".*0d0a0d0a4d5a.*"
+      #value: ".*:0d:0a:0d:0a:4d:5a:.*"
+#max_field_len: 1024
+#elasticsearch:
+  #address: http://log.example.com:9200
+  #document_id: "community_id"
+  #bulk: 128
+  #address: https://log.example.com:9200
+  #user_name: elastic
+  #password: elastic
+  #ssl_verification_disabled: true
+  #ssl_ca_certificate: "../certs/ca/ca.crt"
+#tshark:
+  #exe: ""
+  #args:
+    #- "-d"
+    #- "tcp.port==80,http"
