@@ -1,6 +1,6 @@
 # tshark filter
 
-A tshark wrapper tool to filter and/or aggregate packat data in PCAP and output them in JSON format. As outputs, currently the followings are supported:
+A tshark wrapper tool to filter and/or aggregate packat data in PCAP, generate [ECS](https://github.com/elastic/ecs) fields and output them in JSON format. As outputs, currently the followings are supported:
 * Stdout
 * Elasticsearch
 
@@ -39,7 +39,7 @@ e.g. Stdout output (Filtering)
 ./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output stdout --pretty true
 ```
 
-e.g. Stdout output (Aggregation packets as a flow)
+e.g. Stdout output (Aggregating packets as a single flow)
 ```
 ./tshark-filter --config ./default.yml --pcap http.pcapng --action agg --output stdout --pretty true
 ```
