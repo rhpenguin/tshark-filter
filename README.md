@@ -10,84 +10,7 @@ Output JSON includes:
 * Aggregated packet fields
 * [Elastic Common Schema (ECS)](https://github.com/elastic/ecs) fields are generated.
 
-### Required
-* [tshark](https://www.wireshark.org/docs/man-pages/tshark.html)
-* [github.com/elastic/go-elasticsearch for 7.x](https://github.com/elastic/go-elasticsearch)
-* [github.com/adriansr/flowhash](https://github.com/adriansr/flowhash)
-
-### Install/Build
-1. cd $GOPATH/src
-2. go get -u github.com/adriansr/flowhash
-3. cd $GOPATH/src/github.com
-4. mkdir elastic (if needed)
-5. cd $GOPATH/src/github.com/elastic
-6. git clone -b 7.x https://github.com/elastic/go-elasticsearch.git
-7. cd $GOPATH/src/
-8. git clone https://github.com/rhpenguin/tshark-filter.git
-9. cd $GOPATH/src/tshark-filter/tshark-filter
-10. go build
-
-### Usage
-
-```
-> tshark-filter --config <config_yml_path> --pcap <pcap_file_path> --action <action_name> --output <output_name> --pretty true
-```
-When default_action and/or default_output are specified in a yaml config, --action and/or --output are not needed.
-
-e.g. Stdout output (Filtering)
-```
-./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output stdout --pretty true
-```
-
-e.g. Stdout output (Aggregating packets as a single flow)
-```
-./tshark-filter --config ./default.yml --pcap http.pcapng --action agg --output stdout --pretty true
-```
-Filtering and/or aggregation rules can be configured in the yaml file.
-
-e.g. Elasticsearch output
-```
-./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output elasticsearch
-```
-An Elasticsearch address(url) and auth info can be configured in the yaml file.
-
-### Config file in yaml format
-
-* Configurations are saved as a yaml file.
-* Filtering and/or aggregation rules are defined.
-* Output settings for Elasticsearch are also defined.
-
-e.g. default.yml
-
-```
-#
-# Fields names passed to tshark command as -T ek -e <args>.
-#
-pcap_extracted_fields:
-  - http.host
-  - http.request.method
-  - http.request.uri
-  - tls.handshake.extensions_server_name
-
-#
-# Match conditions for packet fields extracted by pcap_extracted_fields.
-#
-# The following settings mean "(http_request_method AND http_request_uri) OR tls_handshake_extensions_server_name", for example.
-#
-pcap_field_conditions:
-  - http_request_method: 
-      match: regex           # 'exact', 'case_ignore', 'exists' or 'regex'
-      value: ["^P.*","^G.*"] # In case of multiple values, they are ORed.
-    http_request_uri:
-      match: exists
-  - tls_handshake_extensions_server_name:
-      match: exists
-```
-
-* [tshark command reference](https://www.wireshark.org/docs/man-pages/tshark.html)
-
-
-##### Example outputs (Stdout)
+### Example outputs
 
 ```
 [
@@ -230,6 +153,82 @@ pcap_field_conditions:
 ...
 ]
 ```
+
+### Required
+* [tshark](https://www.wireshark.org/docs/man-pages/tshark.html)
+* [github.com/elastic/go-elasticsearch for 7.x](https://github.com/elastic/go-elasticsearch)
+* [github.com/adriansr/flowhash](https://github.com/adriansr/flowhash)
+
+### Install/Build
+1. cd $GOPATH/src
+2. go get -u github.com/adriansr/flowhash
+3. cd $GOPATH/src/github.com
+4. mkdir elastic (if needed)
+5. cd $GOPATH/src/github.com/elastic
+6. git clone -b 7.x https://github.com/elastic/go-elasticsearch.git
+7. cd $GOPATH/src/
+8. git clone https://github.com/rhpenguin/tshark-filter.git
+9. cd $GOPATH/src/tshark-filter/tshark-filter
+10. go build
+
+### Usage
+
+```
+> tshark-filter --config <config_yml_path> --pcap <pcap_file_path> --action <action_name> --output <output_name> --pretty true
+```
+When default_action and/or default_output are specified in a yaml config, --action and/or --output are not needed.
+
+e.g. Stdout output (Filtering)
+```
+./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output stdout --pretty true
+```
+
+e.g. Stdout output (Aggregating packets as a single flow)
+```
+./tshark-filter --config ./default.yml --pcap http.pcapng --action agg --output stdout --pretty true
+```
+Filtering and/or aggregation rules can be configured in the yaml file.
+
+e.g. Elasticsearch output
+```
+./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output elasticsearch
+```
+An Elasticsearch address(url) and auth info can be configured in the yaml file.
+
+### Config file in yaml format
+
+* Configurations are saved as a yaml file.
+* Filtering and/or aggregation rules are defined.
+* Output settings for Elasticsearch are also defined.
+
+e.g. default.yml
+
+```
+#
+# Fields names passed to tshark command as -T ek -e <args>.
+#
+pcap_extracted_fields:
+  - http.host
+  - http.request.method
+  - http.request.uri
+  - tls.handshake.extensions_server_name
+
+#
+# Match conditions for packet fields extracted by pcap_extracted_fields.
+#
+# The following settings mean "(http_request_method AND http_request_uri) OR tls_handshake_extensions_server_name", for example.
+#
+pcap_field_conditions:
+  - http_request_method: 
+      match: regex           # 'exact', 'case_ignore', 'exists' or 'regex'
+      value: ["^P.*","^G.*"] # In case of multiple values, they are ORed.
+    http_request_uri:
+      match: exists
+  - tls_handshake_extensions_server_name:
+      match: exists
+```
+
+* [tshark command reference](https://www.wireshark.org/docs/man-pages/tshark.html)
 
 See more [examples](https://github.com/rhpenguin/tshark-filter/tree/master/tshark-filter/examples) in tshark-filter/examples directory.
 * http.yml : Filtering HTTP fields
