@@ -54,7 +54,7 @@ default_action: "filter"
   #ssl_verification_disabled: true
   #ssl_ca_certificate: "../../es_test/certs/ca/ca.crt"
 #tshark:
-  #exe: ""
+  #exe: "/usr/bin/tshark"
   #args:
     #- "-d"
     #- "tcp.port==80,http"
