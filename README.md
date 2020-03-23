@@ -47,7 +47,7 @@ Filtering and/or aggregation rules can be configured in the yaml file.
 
 e.g. Elasticsearch output
 ```
-./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output elasticsearch --pretty true
+./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output elasticsearch
 ```
 An Elasticsearch address(url) and auth info can be configured in the yaml file.
 
