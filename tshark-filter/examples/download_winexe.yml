@@ -15,7 +15,7 @@ pcap_field_conditions:
   - http_request_method: 
       match: exists
     tcp_dstport: 
-      - 443
+      - 80
       - 3128
     tcp_reassembled_data:
       match: regex
