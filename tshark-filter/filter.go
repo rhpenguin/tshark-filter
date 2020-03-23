@@ -268,127 +268,131 @@ func (filter *filterPacket) Exec(index, packet map[string]interface{}, ctx inter
 		}
 	}
 	found := false
-	for _, condition := range filter.config.Conditions {
-		matched := int(0)
-		for ck, cv0 := range condition {
-			if v0, ok := layers[ck]; ok {
-				match := func(v string, cv interface{}) bool {
-					if cv1, ok := cv.(string); ok {
-						if v == cv1 {
-							return true
-						}
-					} else if cv1, ok := cv.(int); ok {
-						if v == strconv.FormatInt(int64(cv1), 10) {
-							return true
-						}
-					} else if cv1, ok := cv.([]interface{}); ok {
-						for _, cv2 := range cv1 {
-							if cv3, ok := cv2.(string); ok {
-								if v == cv3 {
-									return true
-								}
-							} else if cv3, ok := cv2.(int); ok {
-								if v == strconv.FormatInt(int64(cv3), 10) {
-									return true
-								}
+	if len(filter.config.Conditions) < 1 {
+		found = true
+	} else {
+		for _, condition := range filter.config.Conditions {
+			matched := int(0)
+			for ck, cv0 := range condition {
+				if v0, ok := layers[ck]; ok {
+					match := func(v string, cv interface{}) bool {
+						if cv1, ok := cv.(string); ok {
+							if v == cv1 {
+								return true
 							}
-						}
-					} else if cv1, ok := cv.(map[interface{}]interface{}); ok {
-						if how, ok := cv1["match"]; ok {
-							switch how {
-							case "regex":
-								var regexes []*regexp.Regexp
-								if r, ok := cv1["regex"]; ok {
-									regexes = r.([]*regexp.Regexp)
-								} else {
-									if cmpValue0, ok := cv1["value"]; ok {
-										if cmpValue1, ok := cmpValue0.(string); ok {
-											regex, err := regexp.Compile(cmpValue1)
-											if err == nil {
-												regexes = append(regexes, regex)
-											} else {
-												fmt.Fprintf(os.Stderr, "%s, %s\n", err, cmpValue1)
-											}
-											cv1["regex"] = regexes
-										} else if cmpValues1, ok := cmpValue0.([]interface{}); ok {
-											for _, cv2 := range cmpValues1 {
-												if cv3, ok := cv2.(string); ok {
-													regex, err := regexp.Compile(cv3)
-													if err == nil {
-														regexes = append(regexes, regex)
-													} else {
-														fmt.Fprintf(os.Stderr, "%s, %s\n", err, cmpValue1)
-													}
-												}
-											}
-											cv1["regex"] = regexes
-										}
+						} else if cv1, ok := cv.(int); ok {
+							if v == strconv.FormatInt(int64(cv1), 10) {
+								return true
+							}
+						} else if cv1, ok := cv.([]interface{}); ok {
+							for _, cv2 := range cv1 {
+								if cv3, ok := cv2.(string); ok {
+									if v == cv3 {
+										return true
 									}
-								}
-								if regexes == nil || len(regexes) < 1 {
-									return false
-								}
-								for _, regex := range regexes {
-									if regex.MatchString(v) == true {
+								} else if cv3, ok := cv2.(int); ok {
+									if v == strconv.FormatInt(int64(cv3), 10) {
 										return true
 									}
 								}
-							case "exact", "case_ignore":
-								if cmpValue0, ok := cv1["value"]; ok {
-									if cmpValue1, ok := cmpValue0.(string); ok {
-										if (how == "case_ignore" && strings.ToLower(cmpValue1) == strings.ToLower(v)) ||
-											cmpValue1 == v {
-											return true
-										}
-									} else if cmpValue1, ok := cmpValue0.(int); ok {
-										if v == strconv.FormatInt(int64(cmpValue1), 10) {
-											return true
-										}
-									} else if cmpValue1, ok := cmpValue0.([]interface{}); ok {
-										for _, cv2 := range cmpValue1 {
-											if cv3, ok := cv2.(string); ok {
-												if (how == "case_ignore" && strings.ToLower(v) == strings.ToLower(cv3)) ||
-													v == cv3 {
-													return true
+							}
+						} else if cv1, ok := cv.(map[interface{}]interface{}); ok {
+							if how, ok := cv1["match"]; ok {
+								switch how {
+								case "regex":
+									var regexes []*regexp.Regexp
+									if r, ok := cv1["regex"]; ok {
+										regexes = r.([]*regexp.Regexp)
+									} else {
+										if cmpValue0, ok := cv1["value"]; ok {
+											if cmpValue1, ok := cmpValue0.(string); ok {
+												regex, err := regexp.Compile(cmpValue1)
+												if err == nil {
+													regexes = append(regexes, regex)
+												} else {
+													fmt.Fprintf(os.Stderr, "%s, %s\n", err, cmpValue1)
 												}
-											} else if cv3, ok := cv2.(int); ok {
-												if v == strconv.FormatInt(int64(cv3), 10) {
-													return true
+												cv1["regex"] = regexes
+											} else if cmpValues1, ok := cmpValue0.([]interface{}); ok {
+												for _, cv2 := range cmpValues1 {
+													if cv3, ok := cv2.(string); ok {
+														regex, err := regexp.Compile(cv3)
+														if err == nil {
+															regexes = append(regexes, regex)
+														} else {
+															fmt.Fprintf(os.Stderr, "%s, %s\n", err, cmpValue1)
+														}
+													}
+												}
+												cv1["regex"] = regexes
+											}
+										}
+									}
+									if regexes == nil || len(regexes) < 1 {
+										return false
+									}
+									for _, regex := range regexes {
+										if regex.MatchString(v) == true {
+											return true
+										}
+									}
+								case "exact", "case_ignore":
+									if cmpValue0, ok := cv1["value"]; ok {
+										if cmpValue1, ok := cmpValue0.(string); ok {
+											if (how == "case_ignore" && strings.ToLower(cmpValue1) == strings.ToLower(v)) ||
+												cmpValue1 == v {
+												return true
+											}
+										} else if cmpValue1, ok := cmpValue0.(int); ok {
+											if v == strconv.FormatInt(int64(cmpValue1), 10) {
+												return true
+											}
+										} else if cmpValue1, ok := cmpValue0.([]interface{}); ok {
+											for _, cv2 := range cmpValue1 {
+												if cv3, ok := cv2.(string); ok {
+													if (how == "case_ignore" && strings.ToLower(v) == strings.ToLower(cv3)) ||
+														v == cv3 {
+														return true
+													}
+												} else if cv3, ok := cv2.(int); ok {
+													if v == strconv.FormatInt(int64(cv3), 10) {
+														return true
+													}
 												}
 											}
 										}
 									}
+								case "exists":
+									return true
+								default:
 								}
-							case "exists":
-								return true
-							default:
 							}
 						}
+						return false
 					}
-					return false
-				}
-				if v1, ok := v0.(string); ok {
-					if match(v1, cv0) == false {
+					if v1, ok := v0.(string); ok {
+						if match(v1, cv0) == false {
+							break
+						}
+						matched++
+					} else if v1, ok := v0.([]interface{}); ok {
+						for _, v2 := range v1 {
+							if v2, ok := v2.(string); ok {
+								if match(v2, cv0) == false {
+									break
+								}
+								matched++
+							}
+						}
+					} else {
 						break
 					}
-					matched++
-				} else if v1, ok := v0.([]interface{}); ok {
-					for _, v2 := range v1 {
-						if v2, ok := v2.(string); ok {
-							if match(v2, cv0) == false {
-								break
-							}
-							matched++
-						}
-					}
-				} else {
-					break
 				}
 			}
-		}
-		if matched == len(condition) {
-			found = true
-			break
+			if matched == len(condition) {
+				found = true
+				break
+			}
 		}
 	}
 	if found == false {

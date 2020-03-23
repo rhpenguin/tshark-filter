@@ -155,41 +155,44 @@ func (es *ElasticsearchOutput) bulkPut() error {
 			return esIndex
 		}
 
-		genDocumentID := func() string {
+		genDocumentID := func() (string, error) {
 			if es.config.Elasticsearch.DocumentID == "auto" {
-				return ""
+				return "", nil
 			} else if es.config.Elasticsearch.DocumentID == "community_id" {
 				timestamp := ""
 				if v, ok := packetJson["packet"]; !ok {
-					return ""
+					return "", errors.New("Unknown ES DocumentID")
 				} else {
 					if v, ok := v.(map[string]interface{}); ok {
 						if v, ok := v["frame_time_epoch"]; !ok {
-							return ""
+							return "", errors.New("Unknown ES DocumentID")
 						} else {
 							timestamp = v.(string)
 						}
 					} else {
-						return ""
+						return "", errors.New("Unknown ES DocumentID")
 					}
 				}
 				if v, ok := packetJson["network"]; ok {
 					if v0, ok := v.(map[string]interface{}); ok {
 						if v1, ok := v0["community_id"]; !ok {
-							return ""
+							return "", errors.New("Unknown ES DocumentID")
 						} else {
 							community_id := v1.(string)
 							hash := sha256.New()
 							hash.Write([]byte(timestamp))
 							hash.Write([]byte(community_id))
-							return fmt.Sprintf("%x", hash.Sum(nil))
+							return fmt.Sprintf("%x", hash.Sum(nil)), nil
 						}
 					}
 				}
 			}
-			return ""
+			return "", nil
 		}
-		documentID := genDocumentID()
+		documentID, err := genDocumentID()
+		if err != nil {
+			continue
+		}
 
 		var meta []byte
 		if documentID == "" {
