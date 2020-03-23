@@ -30,13 +30,26 @@ Output JSON includes:
 ### Usage
 
 ```
-> tshark-filter --config <config_yml_path> --pcap <pcap_file_path> --output stdout --pretty true
+> tshark-filter --config <config_yml_path> --pcap <pcap_file_path> --action <action_name> --output <output_name> --pretty true
+```
+When default_action and/or default_output are specified in a yaml config, --action and/or --output are not needed.
+
+e.g. Stdout output (Filtering)
+```
+./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output stdout --pretty true
 ```
 
-e.g. 
+e.g. Stdout output (Aggregation packets as a flow)
 ```
-./tshark-filter --config ./default.yml --pcap http.pcapng --output stdout --pretty true
+./tshark-filter --config ./default.yml --pcap http.pcapng --action agg --output stdout --pretty true
 ```
+Filtering and/or aggregation rules can be configured in the yaml file.
+
+e.g. Elasticsearch output
+```
+./tshark-filter --config ./default.yml --pcap http.pcapng --action filter --output elasticsearch --pretty true
+```
+An Elasticsearch address(url) and auth info can be configured in the yaml file.
 
 ### Config file in yaml format
 
