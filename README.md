@@ -60,20 +60,32 @@ An Elasticsearch address(url) and auth info can be configured in the yaml file.
 e.g. default.yml
 
 ```
+#
+# Fields names passed to tshark command as -T ek -e <args>.
+#
 pcap_extracted_fields:
   - http.host
   - http.request.method
   - http.request.uri
   - tls.handshake.extensions_server_name
+
+#
+# Match conditions for packet fields extracted by pcap_extracted_fields.
+#
+# The following settings mean "(http_request_method AND http_request_uri) OR tls_handshake_extensions_server_name", for example.
+#
 pcap_field_conditions:
   - http_request_method: 
-      match: regex
-      value: ["^P.*","^G.*"]
+      match: regex           # 'exact', 'case_ignore', 'exists' or 'regex'
+      value: ["^P.*","^G.*"] # In case of multiple values, they are ORed.
     http_request_uri:
       match: exists
   - tls_handshake_extensions_server_name:
       match: exists
 ```
+
+* [tshark command reference](https://www.wireshark.org/docs/man-pages/tshark.html)
+
 
 ##### Example outputs (Stdout)
 
